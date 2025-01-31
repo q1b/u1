@@ -49,6 +49,7 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"@tailwindcss/vite": "^4.0.1",
+		"arctic": "^3.2.1",
 		"drizzle-orm": "^0.38.4",
 		"tailwindcss": "^4.0.1"
 	},
