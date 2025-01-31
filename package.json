@@ -47,7 +47,9 @@
     "@libsql/client": "^0.14.0",
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
-    "drizzle-orm": "^0.38.4"
+    "@tailwindcss/vite": "^4.0.1",
+    "drizzle-orm": "^0.38.4",
+    "tailwindcss": "^4.0.1"
   },
   "overrides": {
     "sharp": "0.32.6",
