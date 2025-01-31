@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { pwaInfo } from 'virtual:pwa-info';
 	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
-	import '../app.css'
+	import '../app.css';
 
-    interface Props {
-      children?: import('svelte').Snippet;
-    }
-    let { children }: Props = $props();
-	let webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '')
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+	let { children }: Props = $props();
+	let webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 </script>
 
 <svelte:head>
