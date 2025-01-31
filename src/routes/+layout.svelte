@@ -17,6 +17,7 @@
 	{#each pwaAssetsHead.links as link}
 		<link {...link} />
 	{/each}
+	<!-- eslint-disable-next-line -->
 	{@html webManifest}
 </svelte:head>
 
