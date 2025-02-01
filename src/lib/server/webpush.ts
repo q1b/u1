@@ -1,8 +1,9 @@
 import webPush from 'web-push';
-import { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } from '$env/static/private';
+import { PUBLIC_VAPID_KEY as VAPID_PUBLIC_KEY } from "$env/static/public"
+import { VAPID_PRIVATE_KEY, VAPID_SUBJECT } from '$env/static/private';
 
 webPush.setVapidDetails(
-	'mailto:sukhpreetben10@gmail.com', // Replace with your email
+	VAPID_SUBJECT,
 	VAPID_PUBLIC_KEY,
 	VAPID_PRIVATE_KEY
 );
