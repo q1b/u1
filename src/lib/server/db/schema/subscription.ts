@@ -19,6 +19,6 @@ export const subscriptionRelations = relations(subscriptionTable, ({ one }) => (
 		fields: [subscriptionTable.userId],
 		references: [userTable.id]
 	})
-}))
+}));
 
 export type Subscription = typeof subscriptionTable.$inferSelect;

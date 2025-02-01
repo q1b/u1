@@ -16,6 +16,6 @@ export const sessionRelations = relations(sessionTable, ({ one }) => ({
 		fields: [sessionTable.userId],
 		references: [userTable.id]
 	})
-}))
+}));
 
 export type Session = typeof sessionTable.$inferSelect;
