@@ -11,12 +11,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const subscription = await request.json();
 
-	await db.delete(subscriptionTable).where(
-		and(
-			eq(subscriptionTable.endpoint, subscription.endpoint),
-			eq(subscriptionTable.userId, locals.user.id)
-		)
-	)
+	await db
+		.delete(subscriptionTable)
+		.where(
+			and(
+				eq(subscriptionTable.endpoint, subscription.endpoint),
+				eq(subscriptionTable.userId, locals.user.id)
+			)
+		);
 
 	return json({ status: 'success' });
 };
