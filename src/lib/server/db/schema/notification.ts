@@ -1,6 +1,7 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { userTable } from './user';
 import { createdAt, id } from '../utils';
+import { relations } from 'drizzle-orm';
 
 export const notificationTable = sqliteTable('notification', {
 	id,
@@ -12,5 +13,12 @@ export const notificationTable = sqliteTable('notification', {
 	body: text('content'),
 	createdAt
 });
+
+export const notificationRelations = relations(notificationTable, ({ one }) => ({
+	user: one(userTable, {
+		fields: [notificationTable.userId],
+		references: [userTable.id]
+	})
+}))
 
 export type Notification = typeof notificationTable.$inferSelect;
