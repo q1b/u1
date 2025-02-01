@@ -26,7 +26,7 @@
 <style>
   @reference "tailwindcss/theme";
   :global(html) {
-  	@apply antialiased min-h-screen w-full flex flex-col items-center bg-fuchsia-50 selection:bg-fuchsia-500 selection:text-white text-fuchsia-950;
+  	@apply min-h-screen w-full flex flex-col items-center bg-fuchsia-50 selection:bg-fuchsia-500 selection:text-white text-fuchsia-950;
   }
   :global(body) {
   	@apply flex flex-col items-center w-full;
