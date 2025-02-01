@@ -2,11 +2,11 @@
 /// <reference lib="webworker" />
 import {
 	cleanupOutdatedCaches,
-	createHandlerBoundToURL,
 	precacheAndRoute
 } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
-import { NavigationRoute, registerRoute } from 'workbox-routing';
+// import { NavigationRoute, registerRoute } from 'workbox-routing';
+// createHandlerBoundToURL,
 
 declare let self: ServiceWorkerGlobalScope;
 
