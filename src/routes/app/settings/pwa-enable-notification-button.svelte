@@ -46,7 +46,7 @@
 	<button
 		onclick={subscribe}
 		disabled={subscribed}
-		class="px-4 py-2 mt-4 cursor-pointer bg-blue-600 text-white disabled:text-zinc-400 disabled:bg-zinc-400/20"
+		class="btn-fuchsia mt-4 cursor-pointer text-white disabled:text-zinc-400 disabled:bg-zinc-400/20"
 	>
 		{subscribed ? 'Notifications Enabled' : 'Enable Notifications'}
 	</button>
