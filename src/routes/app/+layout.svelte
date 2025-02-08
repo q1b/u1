@@ -6,7 +6,7 @@
 </script>
 
 <div class="w-full flex flex-col items-center">
-		{@render children?.()}
+	{@render children?.()}
 	{#await import('$lib/PWABadge.svelte') then { default: PWABadge }}
 		<PWABadge />
 	{/await}

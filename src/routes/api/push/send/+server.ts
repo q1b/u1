@@ -1,26 +1,32 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { notificationTable, subscriptionTable } from '$lib/server/db/schema';
-import { db } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
 import { webPush } from '$lib/server/webpush';
+import { repo } from 'remult';
+import { Notification } from '$lib/shared/Notification';
+import { Subscription } from '$lib/shared/Subscription';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
 		error(401, 'Unauthorized');
 	}
-	const { title, body, userId } = await request.json();
 
-	await db.insert(notificationTable).values({
-		userId,
-		title,
-		body
+	const { title, body }: { title: string; body: string } = await request.json();
+
+	await repo(Notification).upsert({
+		where: {
+			userId: locals.user.id
+		},
+		set: {
+			title,
+			body
+		}
 	});
 
-	const subscriptions = await db
-		.select()
-		.from(subscriptionTable)
-		.where(eq(subscriptionTable.userId, userId));
+	const subscriptions = await repo(Subscription).find({
+		where: {
+			userId: locals.user.id
+		}
+	});
 
 	// Send push notification to all user's subscriptions
 	const notifications = subscriptions.map((subscription) => {

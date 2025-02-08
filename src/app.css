@@ -1,11 +1,10 @@
 @import 'tailwindcss';
 
 @utility btn-fuchsia {
-	@apply px-2 py-1 bg-fuchsia-800 active:scale-95 text-white transition-transform
+	@apply px-2 py-1 bg-fuchsia-800 active:scale-95 text-white transition-transform;
 }
 
 @layer base {
-
 	*,
 	:after,
 	:before {

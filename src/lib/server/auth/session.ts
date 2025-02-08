@@ -1,81 +1,99 @@
-import type { RequestEvent } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { db } from '../db';
+import { encodeBase32, encodeHexLowerCase } from '@oslojs/encoding';
 import { sha256 } from '@oslojs/crypto/sha2';
-import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
-import { db } from '$lib/server/db';
-import * as table from '$lib/server/db/schema';
 
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
+import type { RequestEvent } from '@sveltejs/kit';
+import type { MembersOnly } from 'remult';
+import type { Session } from '$lib/shared/Session';
+import type { User } from '$lib/shared/User';
 
 export const sessionCookieName = 'auth-session';
 
-export function generateSessionToken() {
-	const bytes = crypto.getRandomValues(new Uint8Array(18));
-	const token = encodeBase64url(bytes);
-	return token;
-}
-
-export async function createSession(token: string, userId: string) {
+export async function validateSessionToken(token: string): Promise<SessionValidationResult> {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const session: table.Session = {
-		id: sessionId,
-		userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
+	const res = await db.execute({
+		sql: `
+SELECT sessions.id, sessions.userId, sessions.expiresAt, users.id, users.googleId, users.name FROM sessions
+INNER JOIN users ON sessions.userId = users.id
+WHERE sessions.id = ?
+`,
+		args: [sessionId]
+	});
+
+	const row = res.rows.at(0) as SessionValidationResult['session'] &
+		SessionValidationResult['user'];
+
+	if (row === null || row === undefined) {
+		return { session: null, user: null };
+	}
+
+	const session = {
+		id: row.id as string,
+		userId: row.userId as string,
+		expiresAt: new Date((row.expiresAt as unknown as number) * 1000)
 	};
-	await db.insert(table.sessionTable).values(session);
-	return session;
-}
 
-export async function validateSessionToken(token: string) {
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const [result] = await db
-		.select({
-			// Adjust user table here to tweak returned data
-			user: { id: table.userTable.id, name: table.userTable.name },
-			session: table.sessionTable
-		})
-		.from(table.sessionTable)
-		.innerJoin(table.userTable, eq(table.sessionTable.userId, table.userTable.id))
-		.where(eq(table.sessionTable.id, sessionId));
+	const user: Partial<MembersOnly<User>> = {
+		id: row.userId as string,
+		googleId: row.googleId as string,
+		name: row.name as string
+	};
 
-	if (!result) {
+	if (Date.now() >= session.expiresAt.getTime()) {
+		await db.execute({
+			sql: 'DELETE FROM sessions WHERE id = ?',
+			args: [session.id]
+		});
 		return { session: null, user: null };
 	}
-	const { session, user } = result;
-
-	const sessionExpired = Date.now() >= session.expiresAt.getTime();
-	if (sessionExpired) {
-		await db.delete(table.sessionTable).where(eq(table.sessionTable.id, session.id));
-		return { session: null, user: null };
+	if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
+		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+		db.execute({
+			sql: 'UPDATE sessions SET expiresAt = ? WHERE sessions.id = ?',
+			args: [Math.floor(session.expiresAt.getTime() / 1000), session.id]
+		});
 	}
-
-	const renewSession = Date.now() >= session.expiresAt.getTime() - DAY_IN_MS * 15;
-	if (renewSession) {
-		session.expiresAt = new Date(Date.now() + DAY_IN_MS * 30);
-		await db
-			.update(table.sessionTable)
-			.set({ expiresAt: session.expiresAt })
-			.where(eq(table.sessionTable.id, session.id));
-	}
-
 	return { session, user };
 }
 
-export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionToken>>;
-
-export async function invalidateSession(sessionId: string) {
-	await db.delete(table.sessionTable).where(eq(table.sessionTable.id, sessionId));
+export function invalidateSession(sessionId: string): void {
+	db.execute({
+		sql: 'DELETE FROM sessions WHERE id = ?',
+		args: [sessionId]
+	});
 }
 
-export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
+export function invalidateUserSessions(userId: number): void {
+	db.execute({ sql: 'DELETE FROM sessions WHERE userId = ?', args: [userId] });
+}
+
+export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date): void {
 	event.cookies.set(sessionCookieName, token, {
-		expires: expiresAt,
-		path: '/'
+		httpOnly: true,
+		path: '/',
+		secure: import.meta.env.PROD,
+		sameSite: 'lax',
+		expires: expiresAt
 	});
 }
 
-export function deleteSessionTokenCookie(event: RequestEvent) {
-	event.cookies.delete(sessionCookieName, {
-		path: '/'
+export function deleteSessionTokenCookie(event: RequestEvent): void {
+	event.cookies.set(sessionCookieName, '', {
+		httpOnly: true,
+		path: '/',
+		secure: import.meta.env.PROD,
+		sameSite: 'lax',
+		maxAge: 0
 	});
 }
+
+export function generateSessionToken(): string {
+	const tokenBytes = new Uint8Array(20);
+	crypto.getRandomValues(tokenBytes);
+	const token = encodeBase32(tokenBytes).toLowerCase();
+	return token;
+}
+
+type SessionValidationResult =
+	| { session: Partial<MembersOnly<Session>>; user: Partial<MembersOnly<User>> }
+	| { session: null; user: null };

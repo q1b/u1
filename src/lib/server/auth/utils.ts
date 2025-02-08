@@ -1,14 +1,36 @@
-import { eq } from 'drizzle-orm';
-import { db } from '../db';
-import { userTable, type User } from '../db/schema/user';
+import { repo } from 'remult';
+import { User } from '$lib/shared/User';
+import { Session } from '$lib/shared/Session';
+import { sha256 } from '@oslojs/crypto/sha2';
+import { encodeHexLowerCase } from '@oslojs/encoding';
 
 export const getUserFromGoogleId = async (googleId: string): Promise<User | null> => {
-	const res = await db.select().from(userTable).where(eq(userTable.googleId, googleId)).execute();
-	if (res.length === 0) return null;
-	return res[0];
+	return (await repo(User).findFirst({ googleId })) || null;
 };
 
 export const createUser = async (googleId: string, name: string): Promise<User> => {
-	const res = await db.insert(userTable).values({ googleId, name }).returning();
-	return res[0];
+	return await repo(User).insert({ googleId, name });
+};
+
+export const createSession = async (
+	token: string,
+	userId: string
+): Promise<Omit<Session, 'user'>> => {
+	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+
+	const session = await repo(Session).upsert({
+		where: {
+			userId
+		},
+		set: {
+			id: sessionId,
+			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+		}
+	});
+
+	return {
+		id: session.id,
+		userId: session.userId,
+		expiresAt: session.expiresAt
+	};
 };

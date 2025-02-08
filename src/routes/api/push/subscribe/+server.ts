@@ -1,7 +1,7 @@
 import { error, json } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { subscriptionTable } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
+import { repo } from 'remult';
+import { Subscription } from '$lib/shared/Subscription';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -9,11 +9,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const subscription = await request.json();
-	await db.insert(subscriptionTable).values({
-		userId: locals.user.id,
-		endpoint: subscription.endpoint,
-		p256dh: subscription.keys.p256dh,
-		auth: subscription.keys.auth
+
+	await repo(Subscription).upsert({
+		where: {
+			userId: locals.user.id
+		},
+		set: {
+			endpoint: subscription.endpoint,
+			p256dh: subscription.keys.p256dh,
+			auth: subscription.keys.auth
+		}
 	});
 
 	return json({ status: 'success' });

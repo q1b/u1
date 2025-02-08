@@ -2,11 +2,29 @@
 	import { pwaInfo } from 'virtual:pwa-info';
 	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
 	import '../app.css';
+	import { Remult } from 'remult';
+	import { createSubscriber } from 'svelte/reactivity';
 
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
+
+	function initRemultSvelteReactivity() {
+		Remult.entityRefInit = (x) => {
+			let update = () => {};
+			let s = createSubscriber((u) => {
+				update = u;
+			});
+			x.subscribe({
+				reportObserved: () => s(),
+				reportChanged: () => update()
+			});
+		};
+	}
+	initRemultSvelteReactivity();
+
 	let { children }: Props = $props();
+
 	let webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 </script>
 
@@ -24,11 +42,11 @@
 {@render children()}
 
 <style>
-  @reference "tailwindcss/theme";
-  :global(html) {
-  	@apply min-h-screen w-full flex flex-col items-center bg-fuchsia-50 selection:bg-fuchsia-500 selection:text-white text-fuchsia-950;
-  }
-  :global(body) {
-  	@apply flex flex-col items-center w-full;
-  }
+	@reference "tailwindcss/theme";
+	:global(html) {
+		@apply min-h-screen w-full flex flex-col items-center bg-fuchsia-50 selection:bg-fuchsia-500 selection:text-white text-fuchsia-950;
+	}
+	:global(body) {
+		@apply flex flex-col items-center w-full;
+	}
 </style>

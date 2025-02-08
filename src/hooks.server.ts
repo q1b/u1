@@ -1,3 +1,5 @@
+import { sequence } from '@sveltejs/kit/hooks';
+import { api as handleRemult } from '$lib/server/api';
 import type { Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth/session';
 
@@ -22,4 +24,4 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = handleAuth;
+export const handle: Handle = sequence(handleAuth, handleRemult);

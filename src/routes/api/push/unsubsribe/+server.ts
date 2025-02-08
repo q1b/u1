@@ -1,8 +1,7 @@
 import { error, json } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { subscriptionTable } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
-import { and, eq } from 'drizzle-orm';
+import { repo } from 'remult';
+import { Subscription } from '$lib/shared/Subscription';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -10,15 +9,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const subscription = await request.json();
-
-	await db
-		.delete(subscriptionTable)
-		.where(
-			and(
-				eq(subscriptionTable.endpoint, subscription.endpoint),
-				eq(subscriptionTable.userId, locals.user.id)
-			)
-		);
+	await repo(Subscription).deleteMany({
+		where: {
+			$and: [{ endpoint: subscription.endpoint }, { userId: locals.user.id }]
+		}
+	});
 
 	return json({ status: 'success' });
 };

@@ -1,14 +1,10 @@
-import {
-	generateSessionToken,
-	createSession,
-	setSessionTokenCookie
-} from '$lib/server/auth/session';
+import { generateSessionToken, setSessionTokenCookie } from '$lib/server/auth/session';
 import { google } from '$lib/server/auth/google';
 import { decodeIdToken } from 'arctic';
 
 import type { RequestEvent } from '@sveltejs/kit';
 import type { OAuth2Tokens } from 'arctic';
-import { createUser, getUserFromGoogleId } from '$lib/server/auth/utils';
+import { createUser, createSession, getUserFromGoogleId } from '$lib/server/auth/utils';
 
 // {
 //   iss: 'https://accounts.google.com',
