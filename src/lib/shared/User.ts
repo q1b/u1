@@ -2,6 +2,7 @@ import { Entity, Fields, Relations } from 'remult';
 import { Session } from './Session';
 import { Subscription } from './Subscription';
 import { Notification } from './Notification';
+import { Feedback } from './Feedback';
 
 @Entity('users', {
 	allowApiCrud: true
@@ -15,6 +16,9 @@ export class User {
 
 	@Fields.string()
 	name?: string;
+
+	@Relations.toMany(() => Feedback)
+	feedbacks?: Feedback[];
 
 	@Relations.toMany(() => Session)
 	sessions?: Session[];

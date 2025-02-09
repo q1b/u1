@@ -1,4 +1,3 @@
-
 ## Tech Stack:
 
 - TypeScript
@@ -7,3 +6,4 @@
 - Remult
 - Lucia Auth
 - VitePWA
+- TypeSafe Routes
