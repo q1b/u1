@@ -13,7 +13,7 @@ export default defineConfig({
 			LINKS: {
 				// reference to a hardcoded link
 				github: 'https://github.com/q1b'
-			},
+			}
 		}),
 		SvelteKitPWA({
 			strategies: 'injectManifest',
