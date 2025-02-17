@@ -28,10 +28,10 @@ export default defineConfig({
 			},
 
 			manifest: {
-				name: 'Version 1',
-				short_name: 'v1',
+				name: 'University 1',
+				short_name: 'u1',
 				description:
-					'Version 1 focuses on building a web application which can be widely used by several similar professtionals',
+					'University 1 focuses on building a web application which can be widely used by University, College etc.',
 				theme_color: '#4f39f6'
 			},
 
