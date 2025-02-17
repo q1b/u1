@@ -7,5 +7,5 @@ export const google = new Google(
 	GOOGLE_CLIENT_SECRET,
 	dev
 		? 'http://localhost:5173/login/google/callback'
-		: 'https://1ssu.vercel.app/login/google/callback'
+		: 'https://u1-dwr.pages.dev/login/google/callback'
 );

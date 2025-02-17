@@ -1,4 +1,6 @@
 {
+	"name": "u1",
+	"pages_build_output_dir": "./.svelte-kit/cloudflare",
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
