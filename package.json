@@ -46,6 +46,7 @@
 		"@libsql/client": "^0.14.0",
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
+		"@sveltejs/adapter-cloudflare": "^5.0.3",
 		"@tailwindcss/vite": "^4.0.1",
 		"arctic": "^3.2.1",
 		"lucide-svelte": "^0.474.0",

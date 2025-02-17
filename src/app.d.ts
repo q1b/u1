@@ -10,7 +10,18 @@ declare global {
 			user: import('$lib/server/auth/session').SessionValidationResult['user'];
 			session: import('$lib/server/auth/session').SessionValidationResult['session'];
 		}
+
+		interface Platform {
+			env: {
+				COUNTER: DurableObjectNamespace;
+			};
+			context: {
+				waitUntil(promise: Promise<any>): void;
+			};
+			caches: CacheStorage & { default: Cache }
+		}
+
 	}
 }
 
-export {};
+export { };

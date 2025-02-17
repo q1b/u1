@@ -1,6 +1,10 @@
 /// <reference types="vite/client" />
 /// <reference lib="webworker" />
-import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
+import {
+	cleanupOutdatedCaches,
+	createHandlerBoundToURL,
+	precacheAndRoute
+} from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 
@@ -12,16 +16,12 @@ precacheAndRoute(self.__WB_MANIFEST);
 // clean old assets
 cleanupOutdatedCaches();
 
-let allowlist: RegExp[] | undefined
+let allowlist: RegExp[] | undefined;
 // in dev mode, we disable precaching to avoid caching issues
-if (import.meta.env.DEV)
-	allowlist = [/^\/$/]
+if (import.meta.env.DEV) allowlist = [/^\/$/];
 
 // to allow work offline
-registerRoute(new NavigationRoute(
-	createHandlerBoundToURL('/'),
-	{ allowlist },
-))
+registerRoute(new NavigationRoute(createHandlerBoundToURL('/'), { allowlist }));
 
 self.addEventListener('push', (event) => {
 	if (!event.data) return;

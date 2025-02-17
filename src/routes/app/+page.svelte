@@ -42,19 +42,20 @@
 >
 	<div>
 		<h3 class="text-lg">Choose the timings which is suitable to you!</h3>
-		<form method="post"
+		<form
+			method="post"
 			use:enhance={() => {
 				return async ({ result, update }) => {
 					// `result` is an `ActionResult` object
 					// `update` is a function which triggers the default logic that would be triggered if this callback wasn't set
-					console.log(result)
-					await update()
+					console.log(result);
+					await update();
 					if (result.type === 'success') {
 						dialog.close();
 					}
 				};
 			}}
-		 	class="flex flex-col gap-y-4 mt-4"
+			class="flex flex-col gap-y-4 mt-4"
 		>
 			<div class="">
 				<label for="date" id="date">Select Date:</label>
