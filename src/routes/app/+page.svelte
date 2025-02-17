@@ -23,6 +23,7 @@
 		<a
 			class="p-2 rounded-full bg-fuchsia-300 hover:scale-95"
 			href={route('/app/settings')}
+			data-sveltekit-reload
 			aria-label="goto app settings"
 		>
 			<Settings />
