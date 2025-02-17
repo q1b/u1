@@ -55,5 +55,8 @@
 	"overrides": {
 		"sharp": "0.32.6",
 		"sharp-ico": "0.1.5"
+	},
+	"engines": {
+		"node": ">=21.1.0"
 	}
 }
