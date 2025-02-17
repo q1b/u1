@@ -40,6 +40,9 @@
 </svelte:head>
 
 {@render children()}
+{#await import('$lib/PWABadge.svelte') then { default: PWABadge }}
+	<PWABadge />
+{/await}
 
 <style>
 	@reference "tailwindcss/theme";
