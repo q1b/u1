@@ -16,5 +16,6 @@ export const actions: Actions = {
 		const date = formData.get('date');
 		const time = formData.get('time');
 		console.log(date, time, event.locals.user.id);
+		return { type: 'success', status: 204, data: { message: 'Event created successfully' } };
 	}
 };

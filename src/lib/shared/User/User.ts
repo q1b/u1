@@ -1,10 +1,10 @@
 import { Entity, Fields, Relations } from 'remult';
-import { Session } from './Session';
-import { Subscription } from './Subscription';
+import { AuthSession } from './AuthSession';
+import { PushSubscription } from './PushSubscription';
 import { Notification } from './Notification';
 import { Feedback } from './Feedback';
 
-@Entity('users', {
+@Entity('user', {
 	allowApiCrud: true
 })
 export class User {
@@ -20,14 +20,14 @@ export class User {
 	@Relations.toMany(() => Feedback)
 	feedbacks?: Feedback[];
 
-	@Relations.toMany(() => Session)
-	sessions?: Session[];
+	@Relations.toMany(() => AuthSession)
+	auth_sessions?: AuthSession[];
 
 	@Relations.toMany(() => Notification)
 	notifications?: Notification[];
 
-	@Relations.toMany(() => Subscription)
-	subscriptions?: Subscription[];
+	@Relations.toMany(() => PushSubscription)
+	push_subscriptions?: PushSubscription[];
 
 	@Fields.createdAt()
 	createdAt?: Date;

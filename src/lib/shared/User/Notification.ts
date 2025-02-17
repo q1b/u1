@@ -1,7 +1,7 @@
 import { Entity, Fields, Relations } from 'remult';
 import { User } from './User';
 
-@Entity('notifications', {
+@Entity('user_notification', {
 	allowApiCrud: true
 })
 export class Notification {

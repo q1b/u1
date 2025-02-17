@@ -1,6 +1,6 @@
 import { repo } from 'remult';
-import { User } from '$lib/shared/User';
-import { Session } from '$lib/shared/Session';
+import { User } from '$lib/shared/User/User';
+import { AuthSession } from '$lib/shared/User/AuthSession';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeHexLowerCase } from '@oslojs/encoding';
 
@@ -15,10 +15,10 @@ export const createUser = async (googleId: string, name: string): Promise<User> 
 export const createSession = async (
 	token: string,
 	userId: string
-): Promise<Omit<Session, 'user'>> => {
+): Promise<Omit<AuthSession, 'user'>> => {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 
-	const session = await repo(Session).upsert({
+	const session = await repo(AuthSession).upsert({
 		where: {
 			userId
 		},

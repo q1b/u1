@@ -1,7 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { repo } from 'remult';
-import { Subscription } from '$lib/shared/Subscription';
+import { PushSubscription } from '$lib/shared/User/PushSubscription';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const subscription = await request.json();
 
-	await repo(Subscription).upsert({
+	await repo(PushSubscription).upsert({
 		where: {
 			userId: locals.user.id
 		},

@@ -1,10 +1,13 @@
 import { Entity, Fields, Relations } from 'remult';
 import { User } from './User';
 
-@Entity('subscriptions', {
+// https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription
+// contains endpoint, p256dh, auth, and userId
+
+@Entity('user_push_subscription', {
 	allowApiCrud: true
 })
-export class Subscription {
+export class PushSubscription {
 	@Fields.cuid()
 	id!: string;
 
@@ -19,7 +22,7 @@ export class Subscription {
 
 	@Fields.string({ required: true })
 	userId!: string;
-	@Relations.toOne<Subscription, User>(() => User, 'userId')
+	@Relations.toOne<PushSubscription, User>(() => User, 'userId')
 	user!: User;
 
 	@Fields.createdAt()

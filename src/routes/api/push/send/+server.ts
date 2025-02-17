@@ -2,8 +2,8 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { webPush } from '$lib/server/webpush';
 import { repo } from 'remult';
-import { Notification } from '$lib/shared/Notification';
-import { Subscription } from '$lib/shared/Subscription';
+import { Notification } from '$lib/shared/User/Notification';
+import { PushSubscription } from '$lib/shared/User/PushSubscription';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	});
 
-	const subscriptions = await repo(Subscription).find({
+	const subscriptions = await repo(PushSubscription).find({
 		where: {
 			userId: locals.user.id
 		}
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				auth: subscription.auth
 			}
 		};
-
+		// The PushSubscription you wish to send the notification to.
 		return webPush.sendNotification(
 			pushSubscription,
 			JSON.stringify({

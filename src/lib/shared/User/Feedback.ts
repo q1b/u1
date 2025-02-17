@@ -1,7 +1,7 @@
 import { Entity, Fields, Relations } from 'remult';
 import { User } from './User';
 
-@Entity('feedbacks', {
+@Entity('user_feedback', {
 	allowApiCrud: true
 })
 export class Feedback {

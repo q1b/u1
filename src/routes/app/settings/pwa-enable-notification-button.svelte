@@ -10,6 +10,7 @@
 		try {
 			const registration = await navigator.serviceWorker.ready;
 			console.log('Registration Ready');
+			
 			const subscription = await registration.pushManager.subscribe({
 				userVisibleOnly: true,
 				applicationServerKey: VAPID_PUBLIC_KEY

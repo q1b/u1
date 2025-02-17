@@ -4,18 +4,19 @@ import { sha256 } from '@oslojs/crypto/sha2';
 
 import type { RequestEvent } from '@sveltejs/kit';
 import type { MembersOnly } from 'remult';
-import type { Session } from '$lib/shared/Session';
-import type { User } from '$lib/shared/User';
+import type { AuthSession } from '$lib/shared/User/AuthSession';
+import type { User } from '$lib/shared/User/User';
 
 export const sessionCookieName = 'auth-session';
 
 export async function validateSessionToken(token: string): Promise<SessionValidationResult> {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+
 	const res = await db.execute({
 		sql: `
-SELECT sessions.id, sessions.userId, sessions.expiresAt, users.id, users.googleId, users.name FROM sessions
-INNER JOIN users ON sessions.userId = users.id
-WHERE sessions.id = ?
+SELECT user_auth_session.id, user_auth_session.userId, user_auth_session.expiresAt, user.id, user.googleId, user.name FROM user_auth_session
+INNER JOIN user ON user_auth_session.userId = user.id
+WHERE user_auth_session.id = ?
 `,
 		args: [sessionId]
 	});
@@ -41,7 +42,7 @@ WHERE sessions.id = ?
 
 	if (Date.now() >= session.expiresAt.getTime()) {
 		await db.execute({
-			sql: 'DELETE FROM sessions WHERE id = ?',
+			sql: 'DELETE FROM user_auth_session WHERE id = ?',
 			args: [session.id]
 		});
 		return { session: null, user: null };
@@ -49,7 +50,7 @@ WHERE sessions.id = ?
 	if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
 		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 		db.execute({
-			sql: 'UPDATE sessions SET expiresAt = ? WHERE sessions.id = ?',
+			sql: 'UPDATE user_auth_session SET expiresAt = ? WHERE user_auth_session.id = ?',
 			args: [Math.floor(session.expiresAt.getTime() / 1000), session.id]
 		});
 	}
@@ -58,13 +59,13 @@ WHERE sessions.id = ?
 
 export function invalidateSession(sessionId: string): void {
 	db.execute({
-		sql: 'DELETE FROM sessions WHERE id = ?',
+		sql: 'DELETE FROM user_auth_session WHERE id = ?',
 		args: [sessionId]
 	});
 }
 
 export function invalidateUserSessions(userId: number): void {
-	db.execute({ sql: 'DELETE FROM sessions WHERE userId = ?', args: [userId] });
+	db.execute({ sql: 'DELETE FROM user_auth_session WHERE userId = ?', args: [userId] });
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date): void {
@@ -95,5 +96,5 @@ export function generateSessionToken(): string {
 }
 
 type SessionValidationResult =
-	| { session: Partial<MembersOnly<Session>>; user: Partial<MembersOnly<User>> }
+	| { session: Partial<MembersOnly<AuthSession>>; user: Partial<MembersOnly<User>> }
 	| { session: null; user: null };
